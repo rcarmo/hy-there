@@ -1,4 +1,6 @@
 hy-there
 ========
 
-A hylang playground
+A [hylang][hy] playground
+
+[hy]: http://hylang.org
