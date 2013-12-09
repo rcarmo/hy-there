@@ -30,6 +30,23 @@
         (setv response.content_type "application/json")
         {"data" (sample (range 100) 20)}))
 
+(route "/data/<name>" ["GET"]
+    (fn [name]
+        (setv response.content_type "application/json")
+        (get {"one" {"labels"   ["January" "February" "March" "April" "May" "June"]
+                     "datasets" [{
+                       "fillColor"         "rgba(220,220,220,0.5)"
+                       "strokeColor"       "rgba(220,220,220,1)"
+                       "pointColor"        "rgba(220,220,220,1)"
+                       "pointStrokeColor"  "#fff"
+                       "data"              [65 59 90 81 16 51]}]}
+              "two" {"labels"   ["January" "February" "March" "April" "May" "June"]
+                     "datasets" [{
+                       "fillColor"         "rgba(220,220,220,0.5)"
+                       "strokeColor"       "rgba(220,220,220,1)"
+                       "pointColor"        "rgba(220,220,220,1)"
+                       "pointStrokeColor"  "#fff"
+                       "data"              [15 29 40 21 56 31]}]}} name)))
 
 (route "/listen" ["GET"] 
     (fn [] 
