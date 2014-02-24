@@ -34,9 +34,9 @@
 
 (dash-app.directive "ds-chart"
   (fn [] { 
-    :restrict "A"
-    :scope { :data "=" :type "@" :options "=" :id "@" }
-    :link
+    restrict "A"
+    scope { :data "=" :type "@" :options "=" :id "@" }
+    link
       (fn [$scope $elem]
         (set! ctx (.getContext $elem[0] "2d"))
         (set! chart (new Chart ctx))
