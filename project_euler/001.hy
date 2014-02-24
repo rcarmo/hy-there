@@ -7,3 +7,15 @@
     (+ x y))
 
 (print (reduce add (filter interesting (xrange 1000))))
+
+; remove commons
+
+(defn add-divisible [n limit]
+    (let [[p (// (- limit 1) n)]]
+        (// (* n (* p (+ 1 p))) 2)))
+
+(print
+    (-
+        (+ (add-divisible 3 1000)
+           (add-divisible 5 1000))
+        (add-divisible 15 1000)))
