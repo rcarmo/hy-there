@@ -16,6 +16,15 @@
         n
         (fib-inner n 0 1 1)))
 
+; generator
+
+(defn fib []
+    (setv a 0)
+    (setv b 1)
+    (while true
+        (yield a)
+        (setv (, a b) (, b (+ a b)))))
+
 
 ; decorator (taken from https://github.com/hylang/hy/issues/195)
 
