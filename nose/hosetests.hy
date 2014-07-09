@@ -35,4 +35,4 @@
         )]])
 
 (if (= __name__ "__main__")
-    (kwapply (nose.main) {"addplugins" [(HoseTests)]}))
+    (apply (nose.main) {"addplugins" [(HoseTests)]}))
