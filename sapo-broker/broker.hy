@@ -61,7 +61,7 @@
 
 (let [[events (chan)]
       [done   (chan)]]
-    (go subscribe "broker.public.sapo.pt" "/sapo/blogs/activity/post" events)
+    (go subscribe "broker.labs.sapo.pt" "/sapo/blogs/activity/post" events)
     (go logger events)
     (.recv done))
 
