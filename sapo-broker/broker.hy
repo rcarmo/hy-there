@@ -4,20 +4,20 @@
         [base64 [encodestring]]
         [goless [go chan]]
         [struct]
-        [logging])
+        [logging]
+        [sys])
 
-(def log (.getLogger logging))
 
 (defn pack [topic message &optional [action "PUBLISH"] [kind "TOPIC"]]
-    (let [[msg (dumps (if (= action "PUBLISH") 
+    (let [[msg (dumps (if (and (= action "PUBLISH") message) 
                    {"action"
                        {"publish"
-                           {"destination" topic "destination_type" kind "message" {"payload" message}}
-                           "action_type" action}}
+                           {"destination" topic "destination_type" kind "message" {"payload" message}}}
+                           "action_type" "PUBLISH"}
                    {"action"
-                       {action
-                           {"destination" topic "destination_type" kind
-                           "action_type" action}}}))]]
+                       {"subscribe"
+                           {"destination" topic "destination_type" kind}
+                            "action_type" "SUBSCRIBE"}}))]]
         (struct.pack (% "!hhi%ds" (len msg)) 3 0 (len msg) msg)))
 
 
@@ -32,28 +32,36 @@
             (.sendto sock (pack topic message) (, host port)))))
 
 
-(defn subscribe [host topic chan &optional [port 3323]]
-    (let [[sock (socket AF_INET proto)]
-          [prev ""]]
-        (do
-            (.connect sock (, host port))
-            (.sendall sock (apply pack [topic ""] {"action" "SUBSCRIBE"})))
-        (try
-            (while True 
-                (let [[raw (.recv sock 8192)]
-                      [buffer (+ prev raw)]
-                      [length 0]]
-                    (while (len buffer)
-                        (setv length 0)
-                        (try
-                            (let [[(, _ _ length) (struct.unpack "!hh" (slice buffer 0 8))]
-                                  [payload (slice buffer 8 (+ 8 length))]
-                                  [buffer (slice buffer (+ 8 length))]]
-                                (.send chan (loads payload)))
-                            (catch [e Exception]
-                                (setv prev buffer)
-                                (break))))))
-            (catch [e Exception]
-                (print e)))))
+(defn take-bytes [count sock]
+    (let [[buffer (bytearray)]]
+        (while (< (len buffer) count)
+            (setv buffer (+ buffer (.recv sock (- count (len buffer))))))
+        buffer))
 
-(.info log (pack "topic" "message"))
+
+(defn subscribe [host topic channel &optional [proto SOCK_STREAM] [port 3323]]
+    (let [[sock (socket AF_INET proto)]]
+        (.connect sock (, host port))
+        (.sendall sock (apply pack [topic None] {"action" "SUBSCRIBE"}))
+        (while true
+            (try
+                (let [[header (take-bytes 8 sock)]
+                      [(, _ _ length) (struct.unpack "!hhi" header)]
+                      [payload (take-bytes length sock)]]
+                    (.send channel (loads (unicode payload))))
+                (catch [e Exception]
+                    (print ">>" e)
+                    (break))))))
+
+
+(defn logger [channel]
+    (for [msg channel] 
+        (print ">" (get (get (get (get msg "action") "notification") "message") "message_id"))))
+
+
+(let [[events (chan)]
+      [done   (chan)]]
+    (go subscribe "broker.public.sapo.pt" "/sapo/blogs/activity/post" events)
+    (go logger events)
+    (.recv done))
+
