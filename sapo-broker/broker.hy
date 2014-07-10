@@ -1,7 +1,7 @@
 ; A Hy version of my Python SAPO Broker client
 (import [json   [dumps loads]]
         [socket [socket AF_INET SOCK_STREAM]]
-        [base64 [encodestring]]
+        [base64 [encodestring decodestring]]
         [goless [go chan]]
         [struct]
         [logging]
@@ -56,12 +56,12 @@
 
 (defn logger [channel]
     (for [msg channel] 
-        (print ">" (get (get (get (get msg "action") "notification") "message") "message_id"))))
+        (print ">" (decodestring ( get (get (get (get msg "action") "notification") "message") "payload")))))
 
 
 (let [[events (chan)]
       [done   (chan)]]
-    (go subscribe "broker.labs.sapo.pt" "/sapo/blogs/activity/post" events)
+    (go subscribe "broker.labs.sapo.pt" "/sapo.*" events)
     (go logger events)
     (.recv done))
 
