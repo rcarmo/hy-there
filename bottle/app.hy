@@ -2,10 +2,14 @@
 (.append sys.path "../lib")
 
 (import [bottle [run route]])
+(import eww)
+(eww.embed)
+
+(setv app "foo")
 
 (route "/" ["GET"]
     (fn [] "Hy There!"))
 
-(kwapply (run)
+(apply (run)
     {"host" "localhost"
      "port" 8080})
