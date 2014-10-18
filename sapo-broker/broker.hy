@@ -56,7 +56,7 @@
 
 (defn logger [channel]
     (for [msg channel] 
-        (print ">" (decodestring ( get (get (get (get msg "action") "notification") "message") "payload")))))
+        (print ">" (decodestring (get (get (get (get msg "action") "notification") "message") "payload")))))
 
 
 (let [[events (chan)]
