@@ -18,6 +18,8 @@
                        {"subscribe"
                            {"destination" topic "destination_type" kind}
                             "action_type" "SUBSCRIBE"}}))]]
+        ; packet has length, transport type, zero, length-prefixed string
+        ; transport is 0 for XML, 1 for protobuf, 2 for Thrift, 3 for JSON
         (struct.pack (% "!hhi%ds" (len msg)) 3 0 (len msg) msg)))
 
 
