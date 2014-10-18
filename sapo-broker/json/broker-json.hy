@@ -1,4 +1,4 @@
-; A Hy version of my Python SAPO Broker client
+; A Hy version of my Python SAPO Broker client using the JSON transport
 (import [json   [dumps loads]]
         [socket [socket AF_INET SOCK_STREAM]]
         [base64 [encodestring decodestring]]

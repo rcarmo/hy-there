@@ -3,6 +3,8 @@
         [cProfile [Profile]]
         [pstats [Stats]]
         [functools [partial]])
+(import eww)
+(eww.embed)
 
 
 (defn produce [msgs done count]
@@ -25,7 +27,7 @@
       ; enable profiler
       (.enable p)
       ; start a producer
-      (go produce msgs done 10000)
+      (go produce msgs done 1000000)
       ; start three consumers
       (map (partial go consume msgs out) ["one" "two" "three"])
       ; start a logger
